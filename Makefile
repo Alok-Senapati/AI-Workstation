@@ -4,6 +4,9 @@ BASE_VERSION=1.0.0
 IMAGE_PYTHON=ai-python
 PYTHON_VERSION=1.0.0
 
+IMAGE_SCIENCE=ai-science
+SCIENCE_VERSION=1.0.0
+
 inspect-base:
 	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
 
@@ -44,3 +47,33 @@ verify-python:
 	-w /workspace \
 	$(IMAGE_PYTHON):$(PYTHON_VERSION) \
 	bash verify.sh
+
+build-science:
+	docker build \
+		-t $(IMAGE_SCIENCE):$(SCIENCE_VERSION) \
+		-f docker/02-science/Dockerfile \
+		docker/02-science
+
+run-science:
+	docker run --rm -it \
+		$(IMAGE_SCIENCE):$(SCIENCE_VERSION)
+
+verify-science:
+	docker run --rm \
+		-v $(PWD)/docker/02-science:/workspace \
+		-w /workspace \
+		$(IMAGE_SCIENCE):$(SCIENCE_VERSION) \
+		bash verify.sh
+
+build-all: build-base build-python build-science
+
+verify-all: verify-base verify-python verify-science
+
+shell-base:
+	docker run --rm -it ai-base:1.0.0
+
+shell-python:
+	docker run --rm -it ai-python:1.0.0
+
+shell-science:
+	docker run --rm -it ai-science:1.0.0
