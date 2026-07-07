@@ -7,6 +7,9 @@ PYTHON_VERSION=1.0.0
 IMAGE_SCIENCE=ai-science
 SCIENCE_VERSION=1.0.0
 
+IMAGE_PYTORCH=ai-pytorch
+PYTORCH_VERSION=1.0.0
+
 inspect-base:
 	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
 
@@ -65,9 +68,26 @@ verify-science:
 		$(IMAGE_SCIENCE):$(SCIENCE_VERSION) \
 		bash verify.sh
 
-build-all: build-base build-python build-science
+build-pytorch:
+	docker build \
+		-t $(IMAGE_PYTORCH):$(PYTORCH_VERSION) \
+		-f docker/03-pytorch/Dockerfile \
+		docker/03-pytorch
 
-verify-all: verify-base verify-python verify-science
+run-pytorch:
+	docker run --rm -it --gpus all \
+		$(IMAGE_PYTORCH):$(PYTORCH_VERSION)
+
+verify-pytorch:
+	docker run --rm --gpus all \
+		-v $(PWD)/docker/03-pytorch:/workspace \
+		-w /workspace \
+		$(IMAGE_PYTORCH):$(PYTORCH_VERSION) \
+		bash verify.sh
+
+build-all: build-base build-python build-science build-pytorch
+
+verify-all: verify-base verify-python verify-science verify-pytorch
 
 shell-base:
 	docker run --rm -it ai-base:1.0.0
@@ -77,3 +97,6 @@ shell-python:
 
 shell-science:
 	docker run --rm -it ai-science:1.0.0
+
+shell-pytorch:
+	docker run --rm -it --gpus all ai-pytorch:1.0.0
