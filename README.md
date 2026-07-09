@@ -9,6 +9,7 @@ for starting new experiments quickly.
 
 ```text
 .
+├── .github/workflows/       # GitHub Actions verification and publish pipelines
 ├── compose/                 # Docker Compose services for Jupyter and MLflow
 ├── configs/                 # Runtime configuration and persisted MLflow state
 ├── datasets/                # Local datasets mounted into containers
@@ -16,6 +17,7 @@ for starting new experiments quickly.
 ├── docs/                    # Architecture and workflow documentation
 ├── notebooks/               # Shared notebooks mounted into Jupyter
 ├── projects/                # Local project workspace mounted into containers
+├── scripts/ci/              # Shared CI scripts used by GitHub Actions
 └── templates/ml-template/   # Reusable ML project scaffold
 ```
 
@@ -79,13 +81,41 @@ make down-pytorch
 ```bash
 make help
 make build-all
+make ci-build
 make verify-all
+make verify-ci
 make shell-pytorch
 make shell-tensorflow
 make up-pytorch
 make up-tensorflow
 make up-mlflow
 ```
+
+## Continuous Integration
+
+The repository now includes two GitHub Actions workflows.
+
+- `docker-verify.yml` builds the full image graph and runs verification on pull requests, on pushes to `main`, and on manual dispatch.
+- `docker-publish.yml` builds, verifies, and publishes the images to GHCR on pushes to `main`, on `v*.*.*` tags, and on manual dispatch.
+
+### Published Image Tags
+
+The publish workflow pushes one package per image under `ghcr.io/<owner>/`.
+
+- Pushes to `main` publish `edge` and `sha-<shortsha>` tags.
+- Version tags like `v1.2.3` publish `1.2.3`, `1.2`, `1`, `latest`, and `sha-<shortsha>` tags.
+
+### CI GPU Behavior
+
+GitHub-hosted runners do not expose GPUs, so CI uses `AI_WORKSTATION_CI=1`
+when verifying the PyTorch and TensorFlow images. That mode still imports the
+frameworks and runs a lightweight CPU tensor operation, but it skips the strict
+CUDA execution requirement.
+
+Local verification remains unchanged:
+
+- `make verify-all` still requires GPU access for the PyTorch and TensorFlow images.
+- `make verify-ci` mirrors the GitHub Actions behavior for non-GPU environments.
 
 ## Compose Services
 

@@ -26,12 +26,12 @@ MLFLOW_TAG := $(MLFLOW_IMAGE):$(VERSION)
 
 .PHONY: \
 	help \
-	build-all verify-all \
+	build-all ci-build verify-all verify-ci \
 	build-base run-base verify-base shell-base inspect-base history-base clean-base \
 	build-python run-python verify-python shell-python \
 	build-science run-science verify-science shell-science \
-	build-pytorch run-pytorch verify-pytorch shell-pytorch \
-	build-tensorflow run-tensorflow verify-tensorflow shell-tensorflow \
+	build-pytorch run-pytorch verify-pytorch verify-pytorch-ci shell-pytorch \
+	build-tensorflow run-tensorflow verify-tensorflow verify-tensorflow-ci shell-tensorflow \
 	build-jupyter-pytorch build-jupyter-tensorflow verify-jupyter-pytorch verify-jupyter-tensorflow \
 	build-mlflow verify-mlflow \
 	up-pytorch down-pytorch logs-pytorch \
@@ -54,6 +54,15 @@ define docker_verify
 		bash verify.sh
 endef
 
+define docker_verify_ci
+	$(DOCKER) run --rm \
+		-e AI_WORKSTATION_CI=1 \
+		-v $(ROOT_DIR)/$(1):/workspace \
+		-w /workspace \
+		$(2) \
+		bash verify.sh
+endef
+
 define compose_up
 	$(COMPOSE) --env-file $(COMPOSE_ENV_FILE) -f $(1) up -d
 endef
@@ -72,9 +81,11 @@ help:
 	@echo "Build layers:"
 	@echo "  make build-base build-python build-science build-pytorch build-tensorflow"
 	@echo "  make build-jupyter-pytorch build-jupyter-tensorflow build-mlflow"
+	@echo "  make ci-build"
 	@echo ""
 	@echo "Verify layers:"
 	@echo "  make verify-all"
+	@echo "  make verify-ci"
 	@echo ""
 	@echo "Run shells:"
 	@echo "  make shell-base shell-python shell-science shell-pytorch shell-tensorflow"
@@ -141,6 +152,9 @@ run-pytorch:
 verify-pytorch:
 	$(call docker_verify,--gpus all,docker/03-pytorch,$(PYTORCH_TAG))
 
+verify-pytorch-ci:
+	$(call docker_verify_ci,docker/03-pytorch,$(PYTORCH_TAG))
+
 shell-pytorch:
 	$(call docker_run,--gpus all,$(PYTORCH_TAG))
 
@@ -153,12 +167,19 @@ run-tensorflow:
 verify-tensorflow:
 	$(call docker_verify,--gpus all,docker/03-tensorflow,$(TENSORFLOW_TAG))
 
+verify-tensorflow-ci:
+	$(call docker_verify_ci,docker/03-tensorflow,$(TENSORFLOW_TAG))
+
 shell-tensorflow:
 	$(call docker_run,--gpus all,$(TENSORFLOW_TAG))
 
 build-all: build-base build-python build-science build-pytorch build-tensorflow
 
+ci-build: build-all build-jupyter-pytorch build-jupyter-tensorflow build-mlflow
+
 verify-all: verify-base verify-python verify-science verify-pytorch verify-tensorflow
+
+verify-ci: verify-base verify-python verify-science verify-pytorch-ci verify-tensorflow-ci verify-jupyter-pytorch verify-jupyter-tensorflow verify-mlflow
 
 # Jupyter images
 build-jupyter-pytorch:

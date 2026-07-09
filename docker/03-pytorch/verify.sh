@@ -7,12 +7,21 @@ echo "AI Workstation PyTorch Verification"
 echo "=============================="
 
 python <<EOF
+import os
 import torch
 
 print(f"PyTorch Version : {torch.__version__}")
 print(f"CUDA Available  : {torch.cuda.is_available()}")
 
-if torch.cuda.is_available():
+if os.getenv("AI_WORKSTATION_CI") == "1":
+    x = torch.randn((1024, 1024))
+    y = torch.randn((1024, 1024))
+    z = x @ y
+
+    print(f"Tensor Device   : {z.device}")
+    print("GPU execution check skipped because AI_WORKSTATION_CI=1")
+
+elif torch.cuda.is_available():
     print(f"CUDA Version    : {torch.version.cuda}")
     print(f"GPU Count       : {torch.cuda.device_count()}")
     print(f"GPU Name        : {torch.cuda.get_device_name(0)}")
