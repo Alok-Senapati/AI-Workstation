@@ -13,6 +13,9 @@ PYTORCH_VERSION=1.0.0
 IMAGE_TENSORFLOW=ai-tensorflow
 TENSORFLOW_VERSION=1.0.0
 
+IMAGE_PT=ai-jupyter-pytorch:1.0.0
+IMAGE_TF=ai-jupyter-tensorflow:1.0.0
+
 inspect-base:
 	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
 
@@ -123,3 +126,29 @@ shell-pytorch:
 
 shell-tensorflow:
 	docker run --rm -it --gpus all ai-tensorflow:1.0
+
+build-jupyter-pytorch:
+	docker build \
+	--build-arg BASE_IMAGE=ai-pytorch:1.0.0 \
+	-t $(IMAGE_PT) \
+	-f docker/04-jupyter/Dockerfile .
+
+build-jupyter-tensorflow:
+	docker build \
+	--build-arg BASE_IMAGE=ai-tensorflow:1.0.0 \
+	-t $(IMAGE_TF) \
+	-f docker/04-jupyter/Dockerfile .
+
+verify-jupyter-pytorch:
+	docker run --rm \
+	-v $(PWD)/docker/04-jupyter:/workspace \
+	-w /workspace \
+	$(IMAGE_PT) \
+	bash verify.sh
+
+verify-jupyter-tensorflow:
+	docker run --rm \
+	-v $(PWD)/docker/04-jupyter:/workspace \
+	-w /workspace \
+	$(IMAGE_TF) \
+	bash verify.sh
