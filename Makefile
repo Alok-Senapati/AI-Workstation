@@ -10,6 +10,9 @@ SCIENCE_VERSION=1.0.0
 IMAGE_PYTORCH=ai-pytorch
 PYTORCH_VERSION=1.0.0
 
+IMAGE_TENSORFLOW=ai-tensorflow
+TENSORFLOW_VERSION=1.0.0
+
 inspect-base:
 	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
 
@@ -85,9 +88,26 @@ verify-pytorch:
 		$(IMAGE_PYTORCH):$(PYTORCH_VERSION) \
 		bash verify.sh
 
-build-all: build-base build-python build-science build-pytorch
+build-tensorflow:
+	docker build \
+		-t $(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION) \
+		-f docker/03-tensorflow/Dockerfile \
+		docker/03-tensorflow
 
-verify-all: verify-base verify-python verify-science verify-pytorch
+run-tensorflow:
+	docker run --rm -it --gpus all \
+		$(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION)
+
+verify-tensorflow:
+	docker run --rm --gpus all \
+		-v $(PWD)/docker/03-tensorflow:/workspace \
+		-w /workspace \
+		$(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION) \
+		bash verify.sh
+
+build-all: build-base build-python build-science build-pytorch build-tensorflow
+
+verify-all: verify-base verify-python verify-science verify-pytorch verify-tensorflow
 
 shell-base:
 	docker run --rm -it ai-base:1.0.0
@@ -100,3 +120,6 @@ shell-science:
 
 shell-pytorch:
 	docker run --rm -it --gpus all ai-pytorch:1.0.0
+
+shell-tensorflow:
+	docker run --rm -it --gpus all ai-tensorflow:1.0
