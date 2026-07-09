@@ -1,0 +1,39 @@
+services:
+
+  jupyter:
+
+    image: ai-jupyter-pytorch:1.0.0
+
+    container_name: ai-jupyter-pytorch
+
+    restart: unless-stopped
+
+    ports:
+      - "${JUPYTER_PORT}:8888"
+
+    working_dir: /workspace
+
+    volumes:
+      - ${PROJECTS}:/workspace/projects
+      - ${DATASETS}:/workspace/datasets
+      - ${NOTEBOOKS}:/workspace/notebooks
+      - ${CONFIGS}:/workspace/configs
+
+    environment:
+      TZ: ${TZ}
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    command:
+      - jupyter
+      - lab
+      - --ip=0.0.0.0
+      - --no-browser
+      - --allow-root
+      - --NotebookApp.token=

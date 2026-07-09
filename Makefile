@@ -152,3 +152,29 @@ verify-jupyter-tensorflow:
 	-w /workspace \
 	$(IMAGE_TF) \
 	bash verify.sh
+
+up-pytorch:
+	docker compose \
+		--env-file compose/.env \
+		-f compose/pytorch.yml up -d
+
+down-pytorch:
+	docker compose \
+		-f compose/pytorch.yml down
+
+logs-pytorch:
+	docker compose \
+		-f compose/pytorch.yml logs -f
+
+up-tensorflow:
+	docker compose \
+		--env-file compose/.env \
+		-f compose/tensorflow.yml up -d
+
+down-tensorflow:
+	docker compose \
+		-f compose/tensorflow.yml down
+
+logs-tensorflow:
+	docker compose \
+		-f compose/tensorflow.yml logs -f

@@ -1,0 +1,20 @@
+[project]
+name = "ml-project"
+version = "0.1.0"
+description = "Reusable Machine Learning Project Template"
+requires-python = ">=3.12"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "matplotlib",
+    "pyarrow",
+    "polars",
+    "duckdb",
+    "pytest",
+]
+
+[tool.uv]
+package = false
