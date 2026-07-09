@@ -16,6 +16,8 @@ TENSORFLOW_VERSION=1.0.0
 IMAGE_PT=ai-jupyter-pytorch:1.0.0
 IMAGE_TF=ai-jupyter-tensorflow:1.0.0
 
+IMAGE_MLFLOW=ai-mlflow:1.0.0
+
 inspect-base:
 	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
 
@@ -178,3 +180,27 @@ down-tensorflow:
 logs-tensorflow:
 	docker compose \
 		-f compose/tensorflow.yml logs -f
+
+build-mlflow:
+	docker build \
+	-t $(IMAGE_MLFLOW) \
+	-f docker/05-mlflow/Dockerfile .
+
+verify-mlflow:
+	docker run --rm \
+	-v $(PWD)/docker/05-mlflow:/workspace \
+	-w /workspace \
+	$(IMAGE_MLFLOW) \
+	bash verify.sh
+
+up-mlflow:
+	docker compose \
+		-f compose/mlflow.yml up -d
+
+down-mlflow:
+	docker compose \
+		-f compose/mlflow.yml down
+
+logs-mlflow:
+	docker compose \
+		-f compose/mlflow.yml logs -f
