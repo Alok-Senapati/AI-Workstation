@@ -1,206 +1,215 @@
-IMAGE_BASE=ai-base
-BASE_VERSION=1.0.0
+DEFAULT_GOAL := help
 
-IMAGE_PYTHON=ai-python
-PYTHON_VERSION=1.0.0
+VERSION ?= 1.0.0
+DOCKER ?= docker
+COMPOSE ?= docker compose
+ROOT_DIR := $(CURDIR)
+COMPOSE_ENV_FILE := compose/.env
 
-IMAGE_SCIENCE=ai-science
-SCIENCE_VERSION=1.0.0
+BASE_IMAGE := ai-base
+PYTHON_IMAGE := ai-python
+SCIENCE_IMAGE := ai-science
+PYTORCH_IMAGE := ai-pytorch
+TENSORFLOW_IMAGE := ai-tensorflow
+JUPYTER_PYTORCH_IMAGE := ai-jupyter-pytorch
+JUPYTER_TENSORFLOW_IMAGE := ai-jupyter-tensorflow
+MLFLOW_IMAGE := ai-mlflow
 
-IMAGE_PYTORCH=ai-pytorch
-PYTORCH_VERSION=1.0.0
+BASE_TAG := $(BASE_IMAGE):$(VERSION)
+PYTHON_TAG := $(PYTHON_IMAGE):$(VERSION)
+SCIENCE_TAG := $(SCIENCE_IMAGE):$(VERSION)
+PYTORCH_TAG := $(PYTORCH_IMAGE):$(VERSION)
+TENSORFLOW_TAG := $(TENSORFLOW_IMAGE):$(VERSION)
+JUPYTER_PYTORCH_TAG := $(JUPYTER_PYTORCH_IMAGE):$(VERSION)
+JUPYTER_TENSORFLOW_TAG := $(JUPYTER_TENSORFLOW_IMAGE):$(VERSION)
+MLFLOW_TAG := $(MLFLOW_IMAGE):$(VERSION)
 
-IMAGE_TENSORFLOW=ai-tensorflow
-TENSORFLOW_VERSION=1.0.0
+.PHONY: \
+	help \
+	build-all verify-all \
+	build-base run-base verify-base shell-base inspect-base history-base clean-base \
+	build-python run-python verify-python shell-python \
+	build-science run-science verify-science shell-science \
+	build-pytorch run-pytorch verify-pytorch shell-pytorch \
+	build-tensorflow run-tensorflow verify-tensorflow shell-tensorflow \
+	build-jupyter-pytorch build-jupyter-tensorflow verify-jupyter-pytorch verify-jupyter-tensorflow \
+	build-mlflow verify-mlflow \
+	up-pytorch down-pytorch logs-pytorch \
+	up-tensorflow down-tensorflow logs-tensorflow \
+	up-mlflow down-mlflow logs-mlflow
 
-IMAGE_PT=ai-jupyter-pytorch:1.0.0
-IMAGE_TF=ai-jupyter-tensorflow:1.0.0
+define docker_build
+	$(DOCKER) build -t $(1) -f $(2) $(3)
+endef
 
-IMAGE_MLFLOW=ai-mlflow:1.0.0
+define docker_run
+	$(DOCKER) run --rm -it $(1) $(2)
+endef
 
+define docker_verify
+	$(DOCKER) run --rm $(1) \
+		-v $(ROOT_DIR)/$(2):/workspace \
+		-w /workspace \
+		$(3) \
+		bash verify.sh
+endef
+
+define compose_up
+	$(COMPOSE) --env-file $(COMPOSE_ENV_FILE) -f $(1) up -d
+endef
+
+define compose_down
+	$(COMPOSE) -f $(1) down
+endef
+
+define compose_logs
+	$(COMPOSE) -f $(1) logs -f
+endef
+
+help:
+	@echo "AI Workstation commands"
+	@echo ""
+	@echo "Build layers:"
+	@echo "  make build-base build-python build-science build-pytorch build-tensorflow"
+	@echo "  make build-jupyter-pytorch build-jupyter-tensorflow build-mlflow"
+	@echo ""
+	@echo "Verify layers:"
+	@echo "  make verify-all"
+	@echo ""
+	@echo "Run shells:"
+	@echo "  make shell-base shell-python shell-science shell-pytorch shell-tensorflow"
+	@echo ""
+	@echo "Compose services:"
+	@echo "  make up-pytorch down-pytorch logs-pytorch"
+	@echo "  make up-tensorflow down-tensorflow logs-tensorflow"
+	@echo "  make up-mlflow down-mlflow logs-mlflow"
+
+# Base image
 inspect-base:
-	docker inspect $(IMAGE_BASE):$(BASE_VERSION)
+	$(DOCKER) inspect $(BASE_TAG)
 
 history-base:
-	docker history $(IMAGE_BASE):$(BASE_VERSION)
+	$(DOCKER) history $(BASE_TAG)
 
 clean-base:
-	docker image rm $(IMAGE_BASE):$(BASE_VERSION)
+	$(DOCKER) image rm $(BASE_TAG)
 
 build-base:
-	docker build -t $(IMAGE_BASE):$(BASE_VERSION) \
-		-f docker/00-base/Dockerfile \
-		docker/00-base
+	$(call docker_build,$(BASE_TAG),docker/00-base/Dockerfile,docker/00-base)
 
 run-base:
-	docker run --rm -it $(IMAGE_BASE):$(BASE_VERSION)
+	$(call docker_run,,$(BASE_TAG))
 
 verify-base:
-	docker run --rm \
-		-v $(PWD)/docker/00-base:/workspace \
-		-w /workspace \
-		$(IMAGE_BASE):$(BASE_VERSION) \
-		bash verify.sh
+	$(call docker_verify,,docker/00-base,$(BASE_TAG))
 
+shell-base:
+	$(call docker_run,,$(BASE_TAG))
+
+# Python and science layers
 build-python:
-	docker build \
-	-t $(IMAGE_PYTHON):$(PYTHON_VERSION) \
-	-f docker/01-python/Dockerfile \
-	docker/01-python
+	$(call docker_build,$(PYTHON_TAG),docker/01-python/Dockerfile,docker/01-python)
 
 run-python:
-	docker run --rm -it \
-	$(IMAGE_PYTHON):$(PYTHON_VERSION)
+	$(call docker_run,,$(PYTHON_TAG))
 
 verify-python:
-	docker run --rm \
-	-v $(PWD)/docker/01-python:/workspace \
-	-w /workspace \
-	$(IMAGE_PYTHON):$(PYTHON_VERSION) \
-	bash verify.sh
+	$(call docker_verify,,docker/01-python,$(PYTHON_TAG))
+
+shell-python:
+	$(call docker_run,,$(PYTHON_TAG))
 
 build-science:
-	docker build \
-		-t $(IMAGE_SCIENCE):$(SCIENCE_VERSION) \
-		-f docker/02-science/Dockerfile \
-		docker/02-science
+	$(call docker_build,$(SCIENCE_TAG),docker/02-science/Dockerfile,docker/02-science)
 
 run-science:
-	docker run --rm -it \
-		$(IMAGE_SCIENCE):$(SCIENCE_VERSION)
+	$(call docker_run,,$(SCIENCE_TAG))
 
 verify-science:
-	docker run --rm \
-		-v $(PWD)/docker/02-science:/workspace \
-		-w /workspace \
-		$(IMAGE_SCIENCE):$(SCIENCE_VERSION) \
-		bash verify.sh
+	$(call docker_verify,,docker/02-science,$(SCIENCE_TAG))
 
+shell-science:
+	$(call docker_run,,$(SCIENCE_TAG))
+
+# Framework layers
 build-pytorch:
-	docker build \
-		-t $(IMAGE_PYTORCH):$(PYTORCH_VERSION) \
-		-f docker/03-pytorch/Dockerfile \
-		docker/03-pytorch
+	$(call docker_build,$(PYTORCH_TAG),docker/03-pytorch/Dockerfile,docker/03-pytorch)
 
 run-pytorch:
-	docker run --rm -it --gpus all \
-		$(IMAGE_PYTORCH):$(PYTORCH_VERSION)
+	$(call docker_run,--gpus all,$(PYTORCH_TAG))
 
 verify-pytorch:
-	docker run --rm --gpus all \
-		-v $(PWD)/docker/03-pytorch:/workspace \
-		-w /workspace \
-		$(IMAGE_PYTORCH):$(PYTORCH_VERSION) \
-		bash verify.sh
+	$(call docker_verify,--gpus all,docker/03-pytorch,$(PYTORCH_TAG))
+
+shell-pytorch:
+	$(call docker_run,--gpus all,$(PYTORCH_TAG))
 
 build-tensorflow:
-	docker build \
-		-t $(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION) \
-		-f docker/03-tensorflow/Dockerfile \
-		docker/03-tensorflow
+	$(call docker_build,$(TENSORFLOW_TAG),docker/03-tensorflow/Dockerfile,docker/03-tensorflow)
 
 run-tensorflow:
-	docker run --rm -it --gpus all \
-		$(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION)
+	$(call docker_run,--gpus all,$(TENSORFLOW_TAG))
 
 verify-tensorflow:
-	docker run --rm --gpus all \
-		-v $(PWD)/docker/03-tensorflow:/workspace \
-		-w /workspace \
-		$(IMAGE_TENSORFLOW):$(TENSORFLOW_VERSION) \
-		bash verify.sh
+	$(call docker_verify,--gpus all,docker/03-tensorflow,$(TENSORFLOW_TAG))
+
+shell-tensorflow:
+	$(call docker_run,--gpus all,$(TENSORFLOW_TAG))
 
 build-all: build-base build-python build-science build-pytorch build-tensorflow
 
 verify-all: verify-base verify-python verify-science verify-pytorch verify-tensorflow
 
-shell-base:
-	docker run --rm -it ai-base:1.0.0
-
-shell-python:
-	docker run --rm -it ai-python:1.0.0
-
-shell-science:
-	docker run --rm -it ai-science:1.0.0
-
-shell-pytorch:
-	docker run --rm -it --gpus all ai-pytorch:1.0.0
-
-shell-tensorflow:
-	docker run --rm -it --gpus all ai-tensorflow:1.0
-
+# Jupyter images
 build-jupyter-pytorch:
-	docker build \
-	--build-arg BASE_IMAGE=ai-pytorch:1.0.0 \
-	-t $(IMAGE_PT) \
-	-f docker/04-jupyter/Dockerfile .
+	$(DOCKER) build \
+		--build-arg BASE_IMAGE=$(PYTORCH_TAG) \
+		-t $(JUPYTER_PYTORCH_TAG) \
+		-f docker/04-jupyter/Dockerfile .
 
 build-jupyter-tensorflow:
-	docker build \
-	--build-arg BASE_IMAGE=ai-tensorflow:1.0.0 \
-	-t $(IMAGE_TF) \
-	-f docker/04-jupyter/Dockerfile .
+	$(DOCKER) build \
+		--build-arg BASE_IMAGE=$(TENSORFLOW_TAG) \
+		-t $(JUPYTER_TENSORFLOW_TAG) \
+		-f docker/04-jupyter/Dockerfile .
 
 verify-jupyter-pytorch:
-	docker run --rm \
-	-v $(PWD)/docker/04-jupyter:/workspace \
-	-w /workspace \
-	$(IMAGE_PT) \
-	bash verify.sh
+	$(call docker_verify,,docker/04-jupyter,$(JUPYTER_PYTORCH_TAG))
 
 verify-jupyter-tensorflow:
-	docker run --rm \
-	-v $(PWD)/docker/04-jupyter:/workspace \
-	-w /workspace \
-	$(IMAGE_TF) \
-	bash verify.sh
+	$(call docker_verify,,docker/04-jupyter,$(JUPYTER_TENSORFLOW_TAG))
 
+# Compose-managed services
 up-pytorch:
-	docker compose \
-		--env-file compose/.env \
-		-f compose/pytorch.yml up -d
+	$(call compose_up,compose/pytorch.yml)
 
 down-pytorch:
-	docker compose \
-		-f compose/pytorch.yml down
+	$(call compose_down,compose/pytorch.yml)
 
 logs-pytorch:
-	docker compose \
-		-f compose/pytorch.yml logs -f
+	$(call compose_logs,compose/pytorch.yml)
 
 up-tensorflow:
-	docker compose \
-		--env-file compose/.env \
-		-f compose/tensorflow.yml up -d
+	$(call compose_up,compose/tensorflow.yml)
 
 down-tensorflow:
-	docker compose \
-		-f compose/tensorflow.yml down
+	$(call compose_down,compose/tensorflow.yml)
 
 logs-tensorflow:
-	docker compose \
-		-f compose/tensorflow.yml logs -f
+	$(call compose_logs,compose/tensorflow.yml)
 
+# MLflow image and service
 build-mlflow:
-	docker build \
-	-t $(IMAGE_MLFLOW) \
-	-f docker/05-mlflow/Dockerfile .
+	$(DOCKER) build -t $(MLFLOW_TAG) -f docker/05-mlflow/Dockerfile .
 
 verify-mlflow:
-	docker run --rm \
-	-v $(PWD)/docker/05-mlflow:/workspace \
-	-w /workspace \
-	$(IMAGE_MLFLOW) \
-	bash verify.sh
+	$(call docker_verify,,docker/05-mlflow,$(MLFLOW_TAG))
 
 up-mlflow:
-	docker compose \
-		-f compose/mlflow.yml up -d
+	$(call compose_up,compose/mlflow.yml)
 
 down-mlflow:
-	docker compose \
-		-f compose/mlflow.yml down
+	$(call compose_down,compose/mlflow.yml)
 
 logs-mlflow:
-	docker compose \
-		-f compose/mlflow.yml logs -f
+	$(call compose_logs,compose/mlflow.yml)

@@ -1,58 +1,27 @@
-# AI Workstation - TensorFlow Layer
+# AI Workstation TensorFlow Layer
 
-## Purpose
-
-Provides a standalone TensorFlow GPU environment based on CUDA 12.5.
-
-Unlike the PyTorch layer, TensorFlow currently requires CUDA 12.x, so this image is built independently from the PyTorch stack.
-
----
+The TensorFlow layer is a standalone GPU image for TensorFlow workloads whose
+CUDA requirements differ from the PyTorch-based stack.
 
 ## Base Image
 
-nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04
+- `nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04`
 
----
+## Installed Components
 
-## Installed
-
-- Python (managed by uv)
+- Python 3.12 managed by `uv`
 - TensorFlow
-- NumPy
-- Pandas
-- SciPy
-- Scikit-Learn
-- Matplotlib
-- PyArrow
-- Polars
-- DuckDB
+- The same scientific stack used by the science layer
 
----
+## Verification Focus
 
-## Build
+The verification script confirms that TensorFlow can detect a GPU and execute a
+matrix multiplication on `/GPU:0`.
+
+## Commands
 
 ```bash
 make build-tensorflow
-```
-
----
-
-## Verify
-
-```bash
 make verify-tensorflow
-```
-
-Expected output:
-
-- TensorFlow version
-- GPU detected
-- Tensor operation executed on GPU
-
----
-
-## Image
-
-```
-ai-tensorflow:1.0.0
+make shell-tensorflow
 ```

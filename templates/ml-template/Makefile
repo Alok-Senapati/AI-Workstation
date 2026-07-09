@@ -1,19 +1,37 @@
-.PHONY: install train evaluate predict test clean
+PYTHON ?= python3
+UV ?= uv
+PYTEST ?= pytest
+
+.PHONY: help install train evaluate predict check test clean
+
+help:
+	@echo "ML template commands"
+	@echo "  make install"
+	@echo "  make train"
+	@echo "  make evaluate"
+	@echo "  make predict"
+	@echo "  make check"
+	@echo "  make test"
+	@echo "  make clean"
 
 install:
-	uv sync
+	$(UV) sync
 
 train:
-	python scripts/train.py
+	$(PYTHON) scripts/train.py
 
 evaluate:
-	python scripts/evaluate.py
+	$(PYTHON) scripts/evaluate.py
 
 predict:
-	python scripts/predict.py
+	$(PYTHON) scripts/predict.py
+
+# Compile the entry-point scripts to catch obvious syntax regressions early.
+check:
+	$(PYTHON) -m compileall scripts
 
 test:
-	pytest
+	$(PYTEST)
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

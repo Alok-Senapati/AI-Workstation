@@ -1,58 +1,25 @@
-# MLflow Layer
+# AI Workstation MLflow Layer
 
-Provides:
+The MLflow layer provides a lightweight tracking server image that can be run
+locally with Docker Compose.
 
-- MLflow Server
-- Experiment Tracking
-- Model Registry
+## Base Image
 
-Image
+- `ai-python:1.0.0`
 
-```
-ai-mlflow:1.0.0
-```
+## Installed Packages
 
-Verify
+- `mlflow`
+- `psycopg2-binary`
 
-```bash
-make build
-make verify
-```
-
-## Usage
-
-Build
+## Commands
 
 ```bash
 make build-mlflow
-```
-
-Verify
-
-```bash
 make verify-mlflow
-```
-
-Run
-
-```bash
 make up-mlflow
-```
-
-Stop
-
-```bash
+make logs-mlflow
 make down-mlflow
 ```
 
-Logs
-
-```bash
-make logs-mlflow
-```
-
-UI
-
-```
-http://localhost:5000
-```
+The MLflow UI is served at `http://localhost:5000`.

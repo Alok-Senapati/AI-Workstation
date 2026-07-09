@@ -1,20 +1,28 @@
 [project]
 name = "ml-project"
 version = "0.1.0"
-description = "Reusable Machine Learning Project Template"
+description = "Reusable machine learning project template"
+readme = "README.md"
 requires-python = ">=3.12"
-
 dependencies = [
+    "duckdb",
+    "matplotlib",
     "numpy",
     "pandas",
-    "scipy",
-    "scikit-learn",
-    "matplotlib",
-    "pyarrow",
     "polars",
-    "duckdb",
-    "pytest",
+    "pyarrow",
+    "scikit-learn",
+    "scipy",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.uv]
 package = false

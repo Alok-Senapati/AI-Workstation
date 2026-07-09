@@ -1,47 +1,27 @@
-# AI Workstation - Jupyter Layer
+# AI Workstation Jupyter Layer
 
-## Purpose
+The Jupyter layer adds JupyterLab and notebook tooling on top of either the
+PyTorch or TensorFlow runtime image.
 
-Provides JupyterLab on top of the AI Workstation images.
+## Images Produced
 
-The same Dockerfile is used to build:
+- `ai-jupyter-pytorch:1.0.0`
+- `ai-jupyter-tensorflow:1.0.0`
 
-- ai-jupyter-pytorch
-- ai-jupyter-tensorflow
+## Installed Tools
 
-using different base images.
+- JupyterLab
+- Notebook
+- IPykernel
+- JupyterLab Git
+- Ipywidgets
+- Plotly
 
----
-
-## Build
-
-### PyTorch
+## Commands
 
 ```bash
 make build-jupyter-pytorch
-```
-
-### TensorFlow
-
-```bash
 make build-jupyter-tensorflow
-```
-
----
-
-## Verify
-
-```bash
 make verify-jupyter-pytorch
-```
-
-```bash
 make verify-jupyter-tensorflow
 ```
-
----
-
-## Images
-
-- ai-jupyter-pytorch:1.0.0
-- ai-jupyter-tensorflow:1.0.0

@@ -1,51 +1,22 @@
-# AI Workstation - Python Layer
+# AI Workstation Python Layer
 
-## Purpose
-
-This layer extends `ai-base` by adding Python development tooling.
+The Python layer extends `ai-base` by installing `uv` and preparing the image
+for Python dependency management.
 
 ## Base Image
 
-- ai-base:1.0.0
+- `ai-base:1.0.0`
 
 ## Responsibilities
 
-- Python package management
-- uv
-- pip compatibility
-- Python tooling
+- Install `uv`
+- Preserve compatibility with standard `pip` workflows
+- Provide a clean base for higher Python-focused layers
 
-## Does NOT include
-
-- NumPy
-- Pandas
-- SciPy
-- PyTorch
-- TensorFlow
-- Jupyter
-
-## Build
+## Commands
 
 ```bash
 make build-python
-```
-
-## Verify
-
-```bash
 make verify-python
+make shell-python
 ```
-
-## Run
-
-```bash
-make run-python
-```
-
-## Acceptance Criteria
-
-- [x] Image builds successfully
-- [x] Python available
-- [x] pip available
-- [x] uv available
-- [x] Verification passes

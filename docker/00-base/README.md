@@ -1,32 +1,26 @@
 # AI Workstation Base Image
 
-This image is the foundation of the AI Workstation.
+The base image provides the shared operating system, CUDA runtime support, and
+command-line tooling used by the higher layers.
 
-## Responsibilities
+## Includes
 
 - Ubuntu 24.04
-- CUDA Runtime
-- cuDNN Runtime
-- Python
-- Linux utilities
-- Common environment variables
+- NVIDIA CUDA runtime image
+- Python, pip, and virtual environment support
+- Common developer utilities such as `git`, `curl`, `wget`, and `tini`
 
-## Does NOT include
+## Excludes
 
-- NumPy
-- Pandas
-- SciPy
-- PyTorch
-- TensorFlow
-- Jupyter
+- Scientific Python libraries
+- Deep learning frameworks
+- JupyterLab
 - MLflow
 
-## Build
+## Commands
 
-docker build \
-    -t ai-base:1.0.0 \
-    -f Dockerfile .
-
-## Run
-
-docker run --rm -it ai-base:1.0.0
+```bash
+make build-base
+make verify-base
+make shell-base
+```
