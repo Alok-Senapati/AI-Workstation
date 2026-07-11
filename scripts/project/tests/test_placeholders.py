@@ -1,0 +1,30 @@
+from pathlib import Path
+
+from scripts.project.placeholders import replace_all
+
+
+def test_replace_all(tmp_path: Path) -> None:
+    project = tmp_path / "__PROJECT_NAME__"
+    project.mkdir()
+
+    readme = project / "README.md"
+    readme.write_text(
+        "__PROJECT_NAME__\n__PROJECT_DESCRIPTION__"
+    )
+
+    replace_all(
+        tmp_path,
+        {
+            "__PROJECT_NAME__": "customer_churn",
+            "__PROJECT_DESCRIPTION__": "Customer Churn Prediction",
+        },
+    )
+
+    renamed = tmp_path / "customer_churn"
+
+    assert renamed.exists()
+
+    content = (renamed / "README.md").read_text()
+
+    assert "customer_churn" in content
+    assert "Customer Churn Prediction" in content
