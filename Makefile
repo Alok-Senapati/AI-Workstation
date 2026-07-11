@@ -23,6 +23,8 @@ TENSORFLOW_TAG := $(TENSORFLOW_IMAGE):$(VERSION)
 JUPYTER_PYTORCH_TAG := $(JUPYTER_PYTORCH_IMAGE):$(VERSION)
 JUPYTER_TENSORFLOW_TAG := $(JUPYTER_TENSORFLOW_IMAGE):$(VERSION)
 MLFLOW_TAG := $(MLFLOW_IMAGE):$(VERSION)
+PYTHON ?= python3
+UV ?= uv
 
 .PHONY: \
 	help \
@@ -234,3 +236,8 @@ down-mlflow:
 
 logs-mlflow:
 	$(call compose_logs,compose/mlflow.yml)
+
+new-project:
+	$(UV) run python -m scripts.project.cli \
+		--name $(NAME) \
+		--description "$(DESCRIPTION)"
