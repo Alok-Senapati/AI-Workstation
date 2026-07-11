@@ -16,8 +16,8 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["scripts/project/tests"]
-pythonpath = ["."]
+testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100
@@ -31,4 +31,4 @@ python_version = "3.12"
 ignore_missing_imports = true
 
 [tool.uv]
-package = false
+package = true

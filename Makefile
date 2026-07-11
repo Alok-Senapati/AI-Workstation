@@ -238,6 +238,6 @@ logs-mlflow:
 	$(call compose_logs,compose/mlflow.yml)
 
 new-project:
-	$(UV) run python -m scripts.project.cli \
+	$(UV) run python -m ai_workstation.project.cli \
 		--name $(NAME) \
 		--description "$(DESCRIPTION)"

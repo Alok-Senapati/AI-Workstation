@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.project.file_utils import (
+from ai_workstation.project.file_utils import (
     copy_directory,
     delete_directory,
     find_directories,
