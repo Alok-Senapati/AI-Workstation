@@ -4,6 +4,8 @@ import argparse
 from pathlib import Path
 
 from .generator import generate_project
+from .exceptions import ProjectGeneratorError
+from .logger import logger
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -46,21 +48,29 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = build_parser().parse_args()
 
-    project: Path = generate_project(
-        project_name=args.name,
-        project_description=args.description,
-        author=args.author,
-        year=args.year,
-        sync=args.sync
-    )
+    try:
+        logger.info("Creating project...")
 
-    print()
-    print("========================================")
-    print(" Project created successfully")
-    print("========================================")
-    print(f" Name : {args.name}")
-    print(f" Path : {project}")
-    print("========================================")
+        project = generate_project(
+            project_name=args.name,
+            project_description=args.description,
+            author=args.author,
+            year=args.year,
+            sync=args.sync,
+        )
+
+    except ProjectGeneratorError as exc:
+        logger.error("")
+        logger.error("Project creation failed")
+        logger.error(str(exc))
+        raise SystemExit(1)
+
+    logger.info("")
+    logger.info("Project created successfully")
+    logger.info("----------------------------------------")
+    logger.info(f"Name : {args.name}")
+    logger.info(f"Path : {project}")
+    logger.info("----------------------------------------")
 
 
 if __name__ == "__main__":

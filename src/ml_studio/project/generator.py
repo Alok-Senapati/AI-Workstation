@@ -7,6 +7,7 @@ from .file_utils import copy_directory, delete_directory
 from .placeholders import replace_all
 from .validator import validate_project
 from .uv_utils import sync_dependencies
+from .logger import logger
 
 
 def generate_project(
@@ -24,12 +25,13 @@ def generate_project(
     Path
         Path to the generated project.
     """
-
+    logger.info("Validating project...")
     validate_project(
         project_name=project_name,
         template_dir=TEMPLATE_DIR,
         projects_dir=PROJECTS_DIR,
     )
+    logger.info("Copying template...")
 
     destination = PROJECTS_DIR / project_name
 
@@ -42,6 +44,7 @@ def generate_project(
 
     try:
         copy_directory(TEMPLATE_DIR, destination)
+        logger.info("Replacing placeholders...")
         replace_all(destination, placeholders)
     except Exception:
         if destination.exists():
@@ -49,6 +52,7 @@ def generate_project(
         raise
 
     if sync:
+        logger.info("Installing dependencies...")
         sync_dependencies(destination)
 
     return destination
