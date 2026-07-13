@@ -1,7 +1,7 @@
 [project]
-name = "ai-workstation"
+name = "ml-studio"
 version = "0.1.0"
-description = "Reusable ML Engineering Platform"
+description = "ML Engineering Platform & Projects"
 readme = "README.md"
 requires-python = ">=3.12"
 

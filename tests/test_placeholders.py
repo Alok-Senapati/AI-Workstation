@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ai_workstation.project.placeholders import replace_all
+from ml_studio.project.placeholders import replace_all
 
 
 def test_replace_all(tmp_path: Path) -> None:

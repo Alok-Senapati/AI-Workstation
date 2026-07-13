@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ai_workstation.project.generator import generate_project
+from ml_studio.project.generator import generate_project
 
 
 def test_generate_project(monkeypatch, tmp_path: Path) -> None:
@@ -19,12 +19,12 @@ def test_generate_project(monkeypatch, tmp_path: Path) -> None:
     )
 
     monkeypatch.setattr(
-        "ai_workstation.project.generator.TEMPLATE_DIR",
+        "ml_studio.project.generator.TEMPLATE_DIR",
         template,
     )
 
     monkeypatch.setattr(
-        "ai_workstation.project.generator.PROJECTS_DIR",
+        "ml_studio.project.generator.PROJECTS_DIR",
         projects,
     )
 

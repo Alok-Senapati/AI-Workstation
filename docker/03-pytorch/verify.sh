@@ -13,13 +13,13 @@ import torch
 print(f"PyTorch Version : {torch.__version__}")
 print(f"CUDA Available  : {torch.cuda.is_available()}")
 
-if os.getenv("AI_WORKSTATION_CI") == "1":
+if os.getenv("ML_STUDIO_CI") == "1":
     x = torch.randn((1024, 1024))
     y = torch.randn((1024, 1024))
     z = x @ y
 
     print(f"Tensor Device   : {z.device}")
-    print("GPU execution check skipped because AI_WORKSTATION_CI=1")
+    print("GPU execution check skipped because ML_STUDIO_CI=1")
 
 elif torch.cuda.is_available():
     print(f"CUDA Version    : {torch.version.cuda}")

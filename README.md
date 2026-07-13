@@ -1,6 +1,6 @@
-# AI Workstation
+# Machne Learning Studio
 
-AI Workstation is a layered Docker-based machine learning environment for local
+Machne Learning Studio is a layered Docker-based machine learning environment for local
 GPU development. It provides reusable images for Python, scientific computing,
 PyTorch, TensorFlow, JupyterLab, and MLflow, plus a small ML project template
 for starting new experiments quickly.
@@ -107,7 +107,7 @@ The publish workflow pushes one package per image under `ghcr.io/<owner>/`.
 
 ### CI GPU Behavior
 
-GitHub-hosted runners do not expose GPUs, so CI uses `AI_WORKSTATION_CI=1`
+GitHub-hosted runners do not expose GPUs, so CI uses `ML_STUDIO_CI=1`
 when verifying the PyTorch and TensorFlow images. That mode still imports the
 frameworks and runs a lightweight CPU tensor operation, but it skips the strict
 CUDA execution requirement.

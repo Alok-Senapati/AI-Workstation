@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from ai_workstation.project.exceptions import (
+from ml_studio.project.exceptions import (
     InvalidProjectNameError,
     ProjectAlreadyExistsError,
     TemplateNotFoundError,
 )
-from ai_workstation.project.validator import validate_project
+from ml_studio.project.validator import validate_project
 
 
 def test_valid_project(tmp_path: Path) -> None:

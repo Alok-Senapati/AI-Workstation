@@ -8,7 +8,7 @@ from .generator import generate_project
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ai-workstation",
+        prog="ml-studio",
         description="Generate a new ML project.",
     )
 

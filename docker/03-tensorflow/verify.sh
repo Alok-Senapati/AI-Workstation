@@ -17,14 +17,14 @@ gpus = tf.config.list_physical_devices("GPU")
 
 print("GPUs Found :", len(gpus))
 
-if os.getenv("AI_WORKSTATION_CI") == "1":
+if os.getenv("ML_STUDIO_CI") == "1":
     with tf.device("/CPU:0"):
         a = tf.random.normal((1024,1024))
         b = tf.random.normal((1024,1024))
         c = tf.matmul(a,b)
 
     print("Tensor Device :", c.device)
-    print("GPU execution check skipped because AI_WORKSTATION_CI=1")
+    print("GPU execution check skipped because ML_STUDIO_CI=1")
 
 elif not gpus:
     raise RuntimeError("TensorFlow cannot detect GPU")

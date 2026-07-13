@@ -58,7 +58,7 @@ endef
 
 define docker_verify_ci
 	$(DOCKER) run --rm \
-		-e AI_WORKSTATION_CI=1 \
+		-e ml_studio_CI=1 \
 		-v $(ROOT_DIR)/$(1):/workspace \
 		-w /workspace \
 		$(2) \
@@ -238,6 +238,6 @@ logs-mlflow:
 	$(call compose_logs,compose/mlflow.yml)
 
 new-project:
-	$(UV) run python -m ai_workstation.project.cli \
+	$(UV) run python -m ml_studio.project.cli \
 		--name $(NAME) \
 		--description "$(DESCRIPTION)"
