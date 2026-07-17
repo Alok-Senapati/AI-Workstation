@@ -58,7 +58,6 @@ Thumbs.db
 datasets/*
 !datasets/.gitkeep
 
-projects/*
 !projects/.gitkeep
 
 # -----------------------------------------------------------------------------
